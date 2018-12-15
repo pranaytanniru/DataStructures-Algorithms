@@ -1,5 +1,5 @@
 import java.util.*;
-class BFS_GRAPH{
+class BFS_Graph{
 	public static LinkedList<Integer>[] Graph;
 	public static void addEdge(int u,int v){
     if(u==v){
