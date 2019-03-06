@@ -1,0 +1,119 @@
+//sortDLL is the function to sort doubly linked list
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct passKeyNode
+{
+	int num;
+	struct passKeyNode *prev;
+	struct passKeyNode *next;
+};
+int findLenDLL(struct passKeyNode *passKeyHead){
+	if (passKeyHead == NULL){
+		return 0;
+	}
+	return findLenDLL(passKeyHead->next) + 1;
+}
+struct passKeyNode * getMid(struct passKeyNode *head,int len){
+	if (head == NULL || len<1){
+		return head;
+	}
+	while (head != NULL){
+		len--;
+		head = head->next;
+		if (len == 0){
+			head->prev->next = NULL;
+			head->prev = NULL;
+			return head;
+		}
+	}
+	return NULL;
+}
+struct passKeyNode * mergeDLL(struct passKeyNode *head1, struct passKeyNode *head2){
+	struct passKeyNode *dummy = (struct passKeyNode *)malloc(sizeof(struct passKeyNode));
+	dummy->next = NULL;
+	dummy->prev = NULL;
+	dummy->num = 0;
+	struct passKeyNode *dummyHead = dummy;
+	while (head1 != NULL && head2 != NULL){
+		if (head1->num <= head2->num){
+			dummy->next = head1;
+			head1->prev = dummy;
+			head1 = head1->next;
+			dummy = dummy->next;
+		}
+		else{
+			dummy->next = head2;
+			head2->prev = dummy;
+			head2 = head2->next;
+			dummy = dummy->next;
+		}
+	}
+	while (head1 != NULL){
+		dummy->next = head1;
+		head1->prev = dummy;
+		head1 = head1->next;
+		dummy = dummy->next;
+	}
+	while (head2 != NULL){
+		dummy->next = head2;
+		head2->prev = dummy;
+		head2 = head2->next;
+		dummy = dummy->next;
+	}
+	return dummyHead->next;
+}
+struct passKeyNode * sortDLL(struct passKeyNode *passKeyHead){
+	int len = findLenDLL(passKeyHead);
+	if (passKeyHead == NULL || len<=1){
+		return passKeyHead;
+	}
+	struct passKeyNode *mid=getMid(passKeyHead, len/2);
+	struct passKeyNode *temp1 = sortDLL(passKeyHead);
+	struct passKeyNode *temp2 = sortDLL(mid);
+	return mergeDLL(temp1, temp2);
+}
+//code to sort Doubly Linked list
+//the code below is just for debugging purpose
+struct passKeyNode *createnode(int num)
+{
+	struct passKeyNode *new_node = (struct passKeyNode*)malloc(sizeof(struct passKeyNode));
+	new_node->num = num;
+	new_node->prev = NULL;
+	new_node->next = NULL;
+	return new_node;
+}
+
+struct passKeyNode* stringToDLL(char *str)
+{
+	int len = 0;
+	while (str[len] != '\0'){
+		len++;
+	}
+	if (len == 0)
+		return NULL;
+
+	struct passKeyNode *head = createnode(str[len - 1] - '0');
+	for (int i = len - 2; i >= 0; i--)
+	{
+		struct passKeyNode *temp = createnode(str[i] - '0');
+		head->prev = temp;
+		temp->next = head;
+		head = temp;
+	}
+
+	return head;
+}
+void printDLL(struct passKeyNode *head){
+	while (head != NULL){
+		printf("%d", head->num);
+		head = head->next;
+	}
+}
+int main(){
+	struct passKeyNode *head = stringToDLL("0516273948");
+	head=sortDLL(head);
+	printDLL(head);
+	return 0;
+}
